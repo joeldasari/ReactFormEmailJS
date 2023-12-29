@@ -2,8 +2,9 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import emailjs from "@emailjs/browser";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 export const Register = () => {
+  const [btnClicked, setBtnClicked] = useState(false);
   const form = useRef();
   const validateSchema = yup.object({
     FirstName: yup.string().required(),
@@ -20,13 +21,15 @@ export const Register = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validateSchema),
   });
 
-  const onSubmit = () => {
-    alert("Your details has been sent to joeldasari10@gmail.com");
+  const onSubmit = async () => {
+    setBtnClicked(true);
+    alert("Your details are being sent to joeldasari10@gmail.com");
     emailjs
       .sendForm(
         import.meta.env.VITE_SERVICEID,
@@ -36,7 +39,9 @@ export const Register = () => {
       )
       .then(
         () => {
-          alert("Greetings from Joel 🎉");
+          reset();
+          setBtnClicked(false);
+          alert("Greetings from Joel! 🎉");
         },
         (error) => {
           console.log(error.text);
@@ -113,7 +118,11 @@ export const Register = () => {
           {errors.ConfirmPassword?.message}
         </p>
 
-        <button className="w-[250px] rounded-sm bg-black p-1 text-white">
+        <button
+          className={`w-[250px] rounded-sm bg-black p-1 text-white ${
+            btnClicked && " pointer-events-none opacity-50"
+          }`}
+        >
           REGISTER
         </button>
       </form>
